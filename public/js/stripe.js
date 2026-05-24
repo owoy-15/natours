@@ -9,7 +9,7 @@
 //   try {
 //     // 1) Get checkout session from API
 //     const response = await fetch(
-//       `http://127.0.0.1:3000/api/v1/bookings/checkout-session/${tourId}`
+//       `/api/v1/bookings/checkout-session/${tourId}`
 //     );
 
 //     const data = await response.json();

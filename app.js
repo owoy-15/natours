@@ -8,6 +8,7 @@ const helmet = require('helmet'); // security middleware to set various HTTP hea
 const mongoSanitize = require('express-mongo-sanitize'); // Data sanitization middleware against NoSQL query injection
 const xss = require('xss-clean'); // Data sanitization middleware against XSS attacks
 const cookieParser = require('cookie-parser'); // Middleware to parse cookies from the request headers
+const compression = require('compression'); // Middleware
 
 const AppError = require('./utils/appError'); // Custom error class
 const globalErrorHandler = require('./controllers/errorController'); // Global error handling middleware
@@ -71,12 +72,16 @@ app.use(
   })
 ); // use here cuz it use to clear the query string, so it should be before the route handlers
 
+// compressio all the text that send to the client
+// not working on the images
+app.use(compression());
+
 // Test Middleware
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  // console.log(req.cookies); // Log the cookies from the request headers, to test if cookie-parser middleware is working
-  next();
-});
+// app.use((req, res, next) => {
+//   req.requestTime = new Date().toISOString();
+//   // console.log(req.cookies); // Log the cookies from the request headers, to test if cookie-parser middleware is working
+//   next();
+// });
 
 // Mount Routers
 app.use('/', viewsRouter); // Mount the view router to handle all routes that start with /, which are the routes for rendering the views (templates)

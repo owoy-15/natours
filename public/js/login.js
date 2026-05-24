@@ -2,7 +2,7 @@ import { showAlert } from './alerts';
 
 export const login = async (email, password) => {
   try {
-    const res = await fetch('http://127.0.0.1:3000/api/v1/users/signin', {
+    const res = await fetch('/api/v1/users/signin', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -25,7 +25,7 @@ export const login = async (email, password) => {
 
 export const logout = async () => {
   try {
-    const res = await fetch('http://127.0.0.1:3000/api/v1/users/logout');
+    const res = await fetch('/api/v1/users/logout');
 
     if (!res.ok) throw new Error('Request failed');
 
