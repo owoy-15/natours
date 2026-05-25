@@ -8,7 +8,8 @@ const helmet = require('helmet'); // security middleware to set various HTTP hea
 const mongoSanitize = require('express-mongo-sanitize'); // Data sanitization middleware against NoSQL query injection
 const xss = require('xss-clean'); // Data sanitization middleware against XSS attacks
 const cookieParser = require('cookie-parser'); // Middleware to parse cookies from the request headers
-const compression = require('compression'); // Middleware
+const compression = require('compression'); // Middleware function
+const cors = require('cors'); // Middleware function
 
 const AppError = require('./utils/appError'); // Custom error class
 const globalErrorHandler = require('./controllers/errorController'); // Global error handling middleware
@@ -32,8 +33,18 @@ app.set('view engine', 'pug'); // Set Pug as the view engine for rendering templ
 app.set('views', path.join(__dirname, 'views')); // Set the directory for the views (templates) to be the 'views' folder in the current directory
 
 // 1. GLOBAL Middleware
+// IMPLEMENT CORS
+// Allow everyone to consume this api
+// Access-Control-Allow-Origin *
+app.use(cors()); // add a couple of different headers to our response
+// api.natours.com, front-end natours.com
+// app.use(cors({
+//   origin: 'https://www.natours.com'
+// })); // only allow this specific domain to access the api
 
-// Serve static files from folders
+app.options('*', cors()); // Allow preflight requests for all routes, for example, when the client send a POST request, it will send a preflight OPTIONS request first to check if the server allows this request, so we need to handle this preflight request and send back the appropriate CORS headers, so we can use app.options() to handle this preflight request and send back the appropriate CORS headers, for all routes, we can use '*' as the first argument, and cors() as the second argument to handle this preflight request for all routes
+
+// Serving static files from folders
 app.use(express.static(path.join(__dirname, 'public'))); // Serve static files from the 'public' folder
 
 // set security HTTP headers
