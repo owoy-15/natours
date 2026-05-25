@@ -26,6 +26,8 @@ const viewsRouter = require('./Routes/viewRoutes'); // Import the view routes
 // so you can access all function like to define routes, middleware, listen on a port, etc.
 const app = express();
 
+app.enable('trust proxy');
+
 app.set('view engine', 'pug'); // Set Pug as the view engine for rendering templates
 app.set('views', path.join(__dirname, 'views')); // Set the directory for the views (templates) to be the 'views' folder in the current directory
 

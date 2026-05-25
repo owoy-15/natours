@@ -66,3 +66,16 @@ process.on('unhandledRejection', (err) => {
     process.exit(1); // 0 for success, 1 for uncaught exception
   });
 });
+
+// To cleanly shut down your app before process exits.
+// Example:
+// close database connections
+// finish requests
+// stop server safely
+process.on('SIGTERM', () => {
+  console.log('SIGTERM RECEIVED. Shutting Down Gracfully.');
+
+  server.close(() => {
+    console.log('Process teminated!');
+  });
+});

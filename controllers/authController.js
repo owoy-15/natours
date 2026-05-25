@@ -19,7 +19,7 @@ const signToken = (id) => {
   );
 };
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
   // Remove password field before sending the response
@@ -39,7 +39,10 @@ const createSendToken = (user, statusCode, res) => {
       Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
     ), // convert days to milliseconds
     httpOnly: true, // cookie cannot be accessed or modified by the browser, only sent in HTTP requests, protect against XSS attacks
-    secure: process.env.NODE_ENV === 'production', // only send cookie in HTTPS, protect against man;
+    secure: process.env.NODE_ENV === 'production', // only send cookie in HTTPS, protect against man
+
+    // We used it when the app is host
+    // secure: (req.secure || req.headers('x-forwarded-proto')) === 'https'
   });
 
   res.status(statusCode).json({
@@ -65,7 +68,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // Send Welcome email to user after acc is created
   await new Email(newUser, url).sendWelcome();
 
-  createSendToken(newUser, 201, res);
+  createSendToken(newUser, 201, req, res);
 });
 
 exports.signin = async (req, res, next) => {
@@ -81,7 +84,7 @@ exports.signin = async (req, res, next) => {
     return next(new AppError('Incorrect email or password', 401));
   }
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 };
 
 exports.logout = (req, res) => {
@@ -282,7 +285,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   // This is done in the pre save middleware in userModel.js, so it will automatically update the passwordChangedAt property when the password is changed
 
   // 4. Log the user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 // For authenticated users to update their password
@@ -302,5 +305,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // user.findByIdAndUpdate() will not work because it will not run validators and pre save middleware, so we need to use save() method to update the password and also update the passwordChangedAt property
 
   // 4. Log user in, send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
