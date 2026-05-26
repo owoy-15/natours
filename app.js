@@ -20,6 +20,8 @@ const bookingRouter = require('./Routes/bookingRoutes'); // Import the review ro
 const hpp = require('hpp'); // HTTP Parameter Pollution middleware to prevent parameter pollution attacks
 const viewsRouter = require('./Routes/viewRoutes'); // Import the view routes
 
+const bookingController = require('./controllers/bookingController');
+
 //////////////////////////////////////////////////////////////////////////
 
 // This line creates an instance of the Express application.
@@ -27,6 +29,8 @@ const viewsRouter = require('./Routes/viewRoutes'); // Import the view routes
 // so you can access all function like to define routes, middleware, listen on a port, etc.
 const app = express();
 
+// Trust reverse proxy (Heroku, Render, Nginx, etc.)
+// so Express can detect the real client IP and HTTPS protocol
 app.enable('trust proxy');
 
 app.set('view engine', 'pug'); // Set Pug as the view engine for rendering templates
@@ -61,6 +65,13 @@ const limiter = ratelimit({
 });
 // Apply the rate limiting middleware to all routes that start with /api
 app.use('/api', limiter);
+
+// This handle function when receive the body from Stripe, Stripe function that gonna use to actually read the body needs this body in a raw form, as a String not json
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  bookingController.webhookCheckout
+);
 
 // Middleware to parse JSON bodies
 app.use(express.json({ limit: '10kb' })); // Body limit is 10kb, to prevent malicious users from sending large payloads

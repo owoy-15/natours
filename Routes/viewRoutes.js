@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get(
   '/',
-  bookingController.createBookingCheckout, // use it temporary
+  // bookingController.createBookingCheckout, // use it temporary
   authController.isLoggedIn,
   viewController.getOverview
 );
